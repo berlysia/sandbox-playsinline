@@ -1,0 +1,45 @@
+<video playsinline autoplay controls>
+  <source src="./movie.mp4" type="video/mp4" />
+</video>
+<div id="message"></div>
+<div>
+  <p><a href="./playsinline-byEvent.html?abort">abort</a></p>
+  <p><a href="./playsinline-byEvent.html?canplay">canplay</a></p>
+  <p><a href="./playsinline-byEvent.html?canplaythrough">canplaythrough</a></p>
+  <p><a href="./playsinline-byEvent.html?durationchange">durationchange</a></p>
+  <p><a href="./playsinline-byEvent.html?emptied">emptied</a></p>
+  <p><a href="./playsinline-byEvent.html?encrypted">encrypted</a></p>
+  <p><a href="./playsinline-byEvent.html?ended">ended</a></p>
+  <p><a href="./playsinline-byEvent.html?error">error</a></p>
+  <p><a href="./playsinline-byEvent.html?interruptbegin">interruptbegin</a></p>
+  <p><a href="./playsinline-byEvent.html?interruptend">interruptend</a></p>
+  <p><a href="./playsinline-byEvent.html?loadeddata">loadeddata</a></p>
+  <p><a href="./playsinline-byEvent.html?loadedmetadata">loadedmetadata</a></p>
+  <p><a href="./playsinline-byEvent.html?loadstart">loadstart</a></p>
+  <p><a href="./playsinline-byEvent.html?pause">pause</a></p>
+  <p><a href="./playsinline-byEvent.html?play">play</a></p>
+  <p><a href="./playsinline-byEvent.html?playing">playing</a></p>
+  <p><a href="./playsinline-byEvent.html?progress">progress</a></p>
+  <p><a href="./playsinline-byEvent.html?ratechange">ratechange</a></p>
+  <p><a href="./playsinline-byEvent.html?seeked">seeked</a></p>
+  <p><a href="./playsinline-byEvent.html?seeking">seeking</a></p>
+  <p><a href="./playsinline-byEvent.html?stalled">stalled</a></p>
+  <p><a href="./playsinline-byEvent.html?suspend">suspend</a></p>
+  <p><a href="./playsinline-byEvent.html?timeupdate">timeupdate</a></p>
+  <p><a href="./playsinline-byEvent.html?volumechange">volumechange</a></p>
+  <p><a href="./playsinline-byEvent.html?waiting">waiting</a></p>
+</div>
+<script>
+  const eventName = location.search.slice(1) || "canplay";
+  const video = document.querySelector('video');
+  const message = document.querySelector('#message');
+  const createMessage = (msg) => {
+    const el = document.createElement('p');
+    el.textContent = msg;
+    message.insertAdjacentElement('beforeend', el);
+  };
+  video.addEventListener(eventName, () => {
+    Promise.resolve().then(() => video.play())
+      .then(() => createMessage(`success on ${eventName}`), (e) => createMessage(`failure on ${eventName}: ${e.message}`));
+  });
+</script>
