@@ -1,0 +1,84 @@
+<html>
+  <head>
+    <style>
+      body {
+        width: 100%;
+        padding: 0;
+        margin: 0;
+      }
+      video {
+        width: 100%;
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <video playsinline webkit-playsinline controls preload="metadata">
+      <source src="./movie.mp4" />
+    </video>
+    <div id="message"></div>
+    <script>
+      (function(){
+        var videoEl = document.querySelector('video');
+        var messageEl = document.querySelector('#message');
+        var events = [
+          "abort",
+          "canplay",
+          "canplaythrough",
+          // "durationchange",
+          "emptied",
+          "encrypted",
+          "ended",
+          "error",
+          "interruptbegin",
+          "interruptend",
+          "loadeddata",
+          "loadedmetadata",
+          "loadstart",
+          // "mozaudioavailable",
+          "pause",
+          "play",
+          "playing",
+          "progress",
+          // "ratechange",
+          "seeked",
+          "seeking",
+          "stalled",
+          "suspend",
+          // "timeupdate",
+          // "volumechange",
+          "waiting"
+        ];
+        // var attributeNames = videoEl.attributes;
+        // [].forEach.call(attributeNames, function(attr){
+        //   addMessage(`${attr.name}: ${attr.value}`);
+        // });
+        function addMessage(message) {
+          messageEl.insertAdjacentHTML('afterbegin', "<p>" + message + "</p>");
+        }
+        videoEl.addEventListener('loadedmetadata', function() {
+          addMessage("invoke pseudo autoplay");
+          var result = videoEl.play() || Promise.resolve("mimic");
+          result
+            .then(
+              function (v) { addMessage("pseudo autoplay success: " + v); },
+              function (e) { addMessage("pseudo autoplay failure: " + e.message); }
+            );
+        });
+        function toStringMediaErrorCode(code) {
+          switch (code) {
+            case 1: return "MEDIA_ERR_ABORTED";
+            case 2: return "MEDIA_ERR_NETWORK";
+            case 3: return "MEDIA_ERR_DECODE";
+            case 4: return "MEDIA_ERR_SRC_NOT_SUPPORTED";
+            default: return "UNKNOWN";
+          }
+        }
+        events.forEach(function(event) {
+          videoEl.addEventListener(event, function(e) { addMessage("" + new Date() + ": " + event + (event === "error" ? " " + toStringMediaErrorCode(e.target.error.code) + " - " + e.target.error.message : "")); });
+        });
+        videoEl.addEventListener('timeupdate', function(e) { addMessage("" + e.target.currentTime ) })
+      })();
+    </script>
+  </body>
+</html>
