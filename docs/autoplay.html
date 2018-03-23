@@ -58,12 +58,14 @@
         }
         videoEl.addEventListener('loadedmetadata', function() {
           addMessage("invoke pseudo autoplay");
-          var result = videoEl.play() || Promise.resolve("mimic");
-          result
-            .then(
-              function (v) { addMessage("pseudo autoplay success: " + v); },
-              function (e) { addMessage("pseudo autoplay failure: " + e.message); }
-            );
+          var result = videoEl.play();
+          if (result !== undefined) {
+            result
+              .then(
+                function (v) { addMessage("pseudo autoplay success: " + v); },
+                function (e) { addMessage("pseudo autoplay failure: " + e.message); }
+              );
+          }
         });
         function toStringMediaErrorCode(code) {
           switch (code) {
