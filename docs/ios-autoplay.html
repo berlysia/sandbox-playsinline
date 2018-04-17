@@ -1,55 +1,75 @@
-<video playsinline controls>
-  <source src="./movie.mp4" type="video/mp4" />
-</video>
-<div id="message"></div>
-<div>
-  <p><a href="./?abort">abort</a></p>
-  <p><a href="./?canplay">canplay</a></p>
-  <p><a href="./?canplaythrough">canplaythrough</a></p>
-  <p><a href="./?durationchange">durationchange</a></p>
-  <p><a href="./?emptied">emptied</a></p>
-  <p><a href="./?encrypted">encrypted</a></p>
-  <p><a href="./?ended">ended</a></p>
-  <p><a href="./?error">error</a></p>
-  <p><a href="./?interruptbegin">interruptbegin</a></p>
-  <p><a href="./?interruptend">interruptend</a></p>
-  <p><a href="./?loadeddata">loadeddata</a></p>
-  <p><a href="./?loadedmetadata">loadedmetadata</a></p>
-  <p><a href="./?loadstart">loadstart</a></p>
-  <p><a href="./?pause">pause</a></p>
-  <p><a href="./?play">play</a></p>
-  <p><a href="./?playing">playing</a></p>
-  <p><a href="./?progress">progress</a></p>
-  <p><a href="./?ratechange">ratechange</a></p>
-  <p><a href="./?seeked">seeked</a></p>
-  <p><a href="./?seeking">seeking</a></p>
-  <p><a href="./?stalled">stalled</a></p>
-  <p><a href="./?suspend">suspend</a></p>
-  <p><a href="./?timeupdate">timeupdate</a></p>
-  <p><a href="./?volumechange">volumechange</a></p>
-  <p><a href="./?waiting">waiting</a></p>
-</div>
-<script>
-  (function(){
-    const eventName = location.search.slice(1) || "loadedmetadata";
-    const video = document.querySelector('video');
-    const message = document.querySelector('#message');
-    const createMessage = (msg) => {
-      const el = document.createElement('p');
-      el.textContent = msg;
-      message.insertAdjacentElement('beforeend', el);
-    };
-    video.addEventListener(eventName, function(){
-      const result = video.play();
-      if (!result) {
-        createMessage("playがpromiseを返しませんでした");
+<html>
+  <head>
+    <style>
+      body {
+        width: 100%;
+        padding: 0;
+        margin: 0;
       }
+      video {
+        width: 100%;
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <video playsinline controls muted>
+      <source src="./movie.mp4" type="video/mp4" />
+    </video>
+    <div id="message"></div>
+    <div>
+      <p><a href="#abort">abort</a></p>
+      <p><a href="#canplay">canplay</a></p>
+      <p><a href="#canplaythrough">canplaythrough</a></p>
+      <p><a href="#durationchange">durationchange</a></p>
+      <p><a href="#emptied">emptied</a></p>
+      <p><a href="#encrypted">encrypted</a></p>
+      <p><a href="#ended">ended</a></p>
+      <p><a href="#error">error</a></p>
+      <p><a href="#interruptbegin">interruptbegin</a></p>
+      <p><a href="#interruptend">interruptend</a></p>
+      <p><a href="#loadeddata">loadeddata</a></p>
+      <p><a href="#loadedmetadata">loadedmetadata</a></p>
+      <p><a href="#loadstart">loadstart</a></p>
+      <p><a href="#pause">pause</a></p>
+      <p><a href="#play">play</a></p>
+      <p><a href="#playing">playing</a></p>
+      <p><a href="#progress">progress</a></p>
+      <p><a href="#ratechange">ratechange</a></p>
+      <p><a href="#seeked">seeked</a></p>
+      <p><a href="#seeking">seeking</a></p>
+      <p><a href="#stalled">stalled</a></p>
+      <p><a href="#suspend">suspend</a></p>
+      <p><a href="#timeupdate">timeupdate</a></p>
+      <p><a href="#volumechange">volumechange</a></p>
+      <p><a href="#waiting">waiting</a></p>
+    </div>
+    <script>
+      (function(){
+        window.addEventListener("hashchange", function(){ location.reload(true); });
+        const eventName = location.hash.slice(1) || "loadedmetadata";
+        const video = document.querySelector('video');
+        const message = document.querySelector('#message');
+        const createMessage = (msg) => {
+          const el = document.createElement('p');
+          el.textContent = msg;
+          message.insertAdjacentElement('beforeend', el);
+        };
 
-      result
-        .then(
-          function(){createMessage(`success on ${eventName}`);},
-          function(e){createMessage(`failure on ${eventName}: ${e.message}`);}
-        );
-    });
-  })();
-</script>
+        createMessage(`target event: ${eventName}`);
+        video.addEventListener(eventName, function(){
+          const result = video.play();
+          if (!result) {
+            createMessage("playがpromiseを返しませんでした");
+          }
+    
+          result
+            .then(
+              function(){createMessage(`success on ${eventName}`);},
+              function(e){createMessage(`failure on ${eventName}: ${e.message}`);}
+            );
+        });
+      })();
+    </script>        
+  </body>
+</html>
