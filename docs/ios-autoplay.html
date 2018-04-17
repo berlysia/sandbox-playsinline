@@ -13,49 +13,86 @@
     </style>
   </head>
   <body>
-    <video playsinline controls muted>
+    <video playsinline controls>
       <source src="./movie.mp4" type="video/mp4" />
     </video>
-    <div id="message"></div>
     <div>
-      <p><a href="#abort">abort</a></p>
-      <p><a href="#canplay">canplay</a></p>
-      <p><a href="#canplaythrough">canplaythrough</a></p>
-      <p><a href="#durationchange">durationchange</a></p>
-      <p><a href="#emptied">emptied</a></p>
-      <p><a href="#encrypted">encrypted</a></p>
-      <p><a href="#ended">ended</a></p>
-      <p><a href="#error">error</a></p>
-      <p><a href="#interruptbegin">interruptbegin</a></p>
-      <p><a href="#interruptend">interruptend</a></p>
-      <p><a href="#loadeddata">loadeddata</a></p>
-      <p><a href="#loadedmetadata">loadedmetadata</a></p>
-      <p><a href="#loadstart">loadstart</a></p>
-      <p><a href="#pause">pause</a></p>
-      <p><a href="#play">play</a></p>
-      <p><a href="#playing">playing</a></p>
-      <p><a href="#progress">progress</a></p>
-      <p><a href="#ratechange">ratechange</a></p>
-      <p><a href="#seeked">seeked</a></p>
-      <p><a href="#seeking">seeking</a></p>
-      <p><a href="#stalled">stalled</a></p>
-      <p><a href="#suspend">suspend</a></p>
-      <p><a href="#timeupdate">timeupdate</a></p>
-      <p><a href="#volumechange">volumechange</a></p>
-      <p><a href="#waiting">waiting</a></p>
+      <label for="event">event: </label>
+      <select name="event" id="event">
+        <option value="abort">abort</option>
+        <option value="canplay">canplay</option>
+        <option value="canplaythrough">canplaythrough</option>
+        <option value="durationchange">durationchange</option>
+        <option value="emptied">emptied</option>
+        <option value="encrypted">encrypted</option>
+        <option value="ended">ended</option>
+        <option value="error">error</option>
+        <option value="interruptbegin">interruptbegin</option>
+        <option value="interruptend">interruptend</option>
+        <option value="loadeddata">loadeddata</option>
+        <option value="loadedmetadata">loadedmetadata</option>
+        <option value="loadstart">loadstart</option>
+        <option value="pause">pause</option>
+        <option value="play">play</option>
+        <option value="playing">playing</option>
+        <option value="progress">progress</option>
+        <option value="ratechange">ratechange</option>
+        <option value="seeked">seeked</option>
+        <option value="seeking">seeking</option>
+        <option value="stalled">stalled</option>
+        <option value="suspend">suspend</option>
+        <option value="timeupdate">timeupdate</option>
+        <option value="volumechange">volumechange</option>
+        <option value="waiting">waiting</option>
+      </select>
+      <label for="preload">preload: </label>
+      <select name="preload" id="preload">
+        <option value="">(unset)</option>
+        <option value="auto">auto</option>
+        <option value="metadata">metadata</option>
+        <option value="none">none</option>
+      </select>
+      <button type="button" id="apply">apply</button>
     </div>
+    <div id="message"></div>
     <script>
       (function(){
-        window.addEventListener("hashchange", function(){ location.reload(true); });
-        const eventName = location.hash.slice(1) || "loadedmetadata";
+        const parsedHash = parseQuery(location.hash);
+
+        const eventName = parsedHash.event || "loadedmetadata";
+        const preloadName = parsedHash.preload || "";
+
         const video = document.querySelector('video');
         const message = document.querySelector('#message');
+        const apply = document.querySelector('#apply');
+        const nextEvent = document.querySelector('#event');
+        const nextPreload = document.querySelector('#preload');
+
+        // initialize form
+        nextEvent.value = eventName;
+        nextPreload.value = parsedHash.preload || "";
+
+        window.addEventListener("hashchange", function(){ location.reload(true); });
+        if (preloadName) {
+          video.setAttribute("preload", preloadName);
+        }
+
+        apply.addEventListener('click', function() {
+          const event = nextEvent.value;
+          const preload = nextPreload.value;
+          const pairs = [];
+          if (event) pairs.push(`event=${event}`);
+          if (preload) pairs.push(`preload=${preload}`);
+          location.hash = `#${pairs.join("&")}`
+        });
+
         const createMessage = (msg) => {
           const el = document.createElement('p');
           el.textContent = msg;
           message.insertAdjacentElement('beforeend', el);
         };
 
+        createMessage(`target preload: ${preloadName}`);
         createMessage(`target event: ${eventName}`);
         video.addEventListener(eventName, function(){
           const result = video.play();
@@ -69,6 +106,17 @@
               function(e){createMessage(`failure on ${eventName}: ${e.message}`);}
             );
         });
+
+        function parseQuery(raw) {
+          const seed = raw[0] === "#" || raw[0] === "?" ? raw.slice(1) : raw;
+          const paired = seed.split("&");
+          const map = paired.reduce(function(obj, pair){
+            const kv = pair.split("=");
+            obj[kv[0]] = kv[1];
+            return obj;
+          }, {});
+          return map;
+        }
       })();
     </script>        
   </body>
